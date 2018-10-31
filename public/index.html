@@ -3,63 +3,59 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
-
+    <link rel="shortcut icon" href="https://firebase.google.com/_static/12f9a4d461/images/firebase/favicon.png">
+    <title>Jugando con Firebase Cloud Message</title>
     <!-- update the version number as needed -->
+    <script defer src="/__/firebase/5.5.4/firebase.js"></script>
     <script defer src="/__/firebase/5.5.4/firebase-app.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/5.5.4/firebase-auth.js"></script>
-    <script defer src="/__/firebase/5.5.4/firebase-database.js"></script>
+   <script defer src="/__/firebase/5.5.4/firebase-auth.js"></script>
     <script defer src="/__/firebase/5.5.4/firebase-messaging.js"></script>
-    <script defer src="/__/firebase/5.5.4/firebase-storage.js"></script>
-    <!-- initialize the SDK after all desired features are loaded -->
+    <!--<script defer src="/__/firebase/5.5.4/firebase-database.js"></script>-->ç
     <script defer src="/__/firebase/init.js"></script>
-
+    <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
     <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; height: calc(100vh - 100px); margin: 0; padding: 0;  }
+      footer { background-color: #039BE5; bottom: 0; color: #ECEFF1; position: absolute; text-align: center; width: 100% }
+      footer a {color: #ECEFF1; font-weight: bold;}
+      a {text-decoration: none}
+      #container { background: white; max-width: 560px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+      #container h2, #container p a { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+      #container h1  { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+      #container p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+      #container { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      #firebaseui-auth-container img { display: block; margin: 0 auto}
+      #messaging-container { display: none}
+      .customButton { color: #757575; font-size: 14px; text-transform: capitalize;}
       @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body, #container { margin-top: 0; background: white; box-shadow: none; }
         body { border-top: 16px solid #ffa100; }
+        footer {font-size: 14px}
       }
     </style>
   </head>
   <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    <div id="container">
+      <h2>Bienvenido<span id="userName">, desconocido</span></h2>
+      <h1>Jugando con <br>Firebase Cloud Messaging 🔥☁️📬</h1>
+      <p>
+        Si estás viendo esto es por que asististe a mi charla sobre  Firebase Cloud Messaging 🔥☁️📬.
+        Me gustaría saber que costruiste algo genial, con Firebase 🔥
+      </p>
+      <p>Puedes mirar el repositorio de esta proyecto en
+        <a href="https://github.com/Villanuevand/jugando-con-fcm">Github</a>
+      </p>
+      <div id="firebaseui-auth-container">
+        <img id="loading" src="assets/loading.svg" alt="loading">
+      </div>
+      <div id="messaging-container">
+        <h3>Registro exitoso</h3>
+        <button type="button" class="customButton firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-google firebaseui-id-idp-button"  id="logOut">Cerrar sesión</button>
+      </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
-        try {
-          let app = firebase.app();
-          let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
-          document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
+    <footer>
+      <p>⌨️ con  ❤️ por <a href="https://github.com/Villanuevand" target="_blank">Villanuevand</a>, gracias a Firebase 🔥</p>
+    </footer>
+    <script src="js/main.js"></script>
   </body>
 </html>
