@@ -6,13 +6,6 @@
     <link rel="shortcut icon" href="https://firebase.google.com/_static/12f9a4d461/images/firebase/favicon.png">
     <title>Jugando con Firebase Cloud Message</title>
     <!-- update the version number as needed -->
-    <script defer src="/__/firebase/5.5.4/firebase.js"></script>
-    <script defer src="/__/firebase/5.5.4/firebase-app.js"></script>
-   <script defer src="/__/firebase/5.5.4/firebase-auth.js"></script>
-    <script defer src="/__/firebase/5.5.4/firebase-messaging.js"></script>
-    <!--<script defer src="/__/firebase/5.5.4/firebase-database.js"></script>-->ç
-    <script defer src="/__/firebase/init.js"></script>
-    <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
     <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
     <style media="screen">
       body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; height: calc(100vh - 100px); margin: 0; padding: 0;  }
@@ -36,13 +29,13 @@
   </head>
   <body>
     <div id="container">
-      <h2>Bienvenido<span id="userName">, desconocido</span></h2>
+      <h2>Bienvenido, <span id="userName">desconocido</span></h2>
       <h1>Jugando con <br>Firebase Cloud Messaging 🔥☁️📬</h1>
       <p>
         Si estás viendo esto es por que asististe a mi charla sobre  Firebase Cloud Messaging 🔥☁️📬.
         Me gustaría saber que costruiste algo genial, con Firebase 🔥
       </p>
-      <p>Puedes mirar el repositorio de esta proyecto en
+      <p>Puedes mirar el repositorio de este proyecto en
         <a href="https://github.com/Villanuevand/jugando-con-fcm">Github</a>
       </p>
       <div id="firebaseui-auth-container">
@@ -56,6 +49,25 @@
     <footer>
       <p>⌨️ con  ❤️ por <a href="https://github.com/Villanuevand" target="_blank">Villanuevand</a>, gracias a Firebase 🔥</p>
     </footer>
+    <script src="/__/firebase/5.5.6/firebase.js"></script>
+    <script defer src="/__/firebase/5.5.6/firebase-app.js"></script>
+    <script defer src="/__/firebase/5.5.6/firebase-auth.js"></script>
+    <script defer src="/__/firebase/5.5.6/firebase-messaging.js"></script>
+    <!--<script defer src="/__/firebase/5.5.4/firebase-database.js"></script>-->
+    <script defer src="/__/firebase/init.js"></script>
+    <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
+    <script>
+      // Initialize Firebase
+      const config = {
+        apiKey: "AIzaSyCpcM1jBya3y95RmJohzgfe9IzbWecjWeE",
+        authDomain: "jugando-con-fcm.firebaseapp.com",
+        databaseURL: "https://jugando-con-fcm.firebaseio.com",
+        projectId: "jugando-con-fcm",
+        storageBucket: "jugando-con-fcm.appspot.com",
+        messagingSenderId: "584889977797"
+      };
+      firebase.initializeApp(config);
+    </script>
     <script src="js/main.js"></script>
   </body>
 </html>
