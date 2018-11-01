@@ -1,5 +1,3 @@
-const firebaseUiContainer = document.getElementById('firebaseui-auth-container');
-const messagingContainer = document.getElementById('messaging-container');
 const userName = document.getElementById('userName');
 const logOut = document.getElementById('logOut');
 
@@ -10,14 +8,8 @@ ui.disableAutoSignIn();
 function getUIConfig () {
   return {
     'callbacks': {
-      'signInSuccessWithAuthResult': function(authResult) {
-        logInSuccess(authResult);
-      },
-      'signInFailure': function(error) {
-        return handleUIError(error);
-      },
-      'uiShown': function() {
-        document.getElementById('loading').style.display = 'none';
+      'uiShown': () =>  {
+        toggleElements('loading', 'none');
       }
     },
     'signInOptions': [
@@ -26,36 +18,50 @@ function getUIConfig () {
   };
 }
 
-firebase.auth().onAuthStateChanged(function(user) {
-  //document.getElementById('loading').style.display = 'none';
-  user ? logInSuccess(user) : logOutSuccess();
+firebase.auth().onAuthStateChanged((user) => {
+  user ? subscribeToNotifications(user) : userLogOut();
 });
 
 
-function logInSuccess (user) {
-  console.log('Login auth result', user);
-  firebaseUiContainer.style.display = 'none';
-  messagingContainer.style.display = 'block';
+function userLogIn (user) {
+  toggleElements('firebaseui-auth-container', 'none');
+  toggleElements('messaging-container', 'block');
+  toggleElements('error-container','none');
   userName.textContent = user.displayName;
 }
 
-function logOutSuccess () {
-  userName.innerHTML = ', desconocido';
-  firebaseUiContainer.style.display = 'block';
-  messagingContainer.style.display = 'none';
-  userName.innerHTML = 'desconocido';
+function userLogOut () {
+  userName.textContent = 'desconocido';
+  toggleElements('firebaseui-auth-container', 'block');
+  toggleElements('messaging-container', 'none');
   ui.start('#firebaseui-auth-container', getUIConfig());
+  signOut();
 }
 
+function subscribeToNotifications (user) {
+  firebase.messaging().requestPermission()
+    .then(() =>  userLogIn(user))
+    .catch(() => {
+      userLogOut();
+      toggleElements('error-container','block');
+      document.getElementById('error-container')
+        .textContent = 'Para continuar debes aceptar las notificaciones 😕';
+    });
+}
 
+function  signOut() {
+  firebase.auth().signOut();
+}
+
+function toggleElements (element, option) {
+  document.getElementById(element).style.display = option;
+}
 
 const initApp  = function () {
   logOut.addEventListener('click', function () {
-    firebase.auth().signOut().then(function() {
-      logOutSuccess();
-    }).catch(function(error) {
-      console.log('no cerro, algo paso', error)
-    });
+    firebase.auth().signOut()
+      .then(() => userLogOut())
+      .catch(() => console.log('no cerro, algo paso', error));
   });
 };
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="https://firebase.google.com/_static/12f9a4d461/images/firebase/favicon.png">
     <title>Jugando con Firebase Cloud Message</title>
-    <!-- update the version number as needed -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
     <style media="screen">
       body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; height: calc(100vh - 100px); margin: 0; padding: 0;  }
@@ -18,8 +18,13 @@
       #container p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
       #container { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
       #firebaseui-auth-container img { display: block; margin: 0 auto}
-      #messaging-container { display: none}
+      #messaging-container, #error-container  { display: none}
       .customButton { color: #757575; font-size: 14px; text-transform: capitalize;}
+      .message { color: red;}
+      .container-form { width: 100%}
+      .container-form label {display: inline-block; width: 60%}
+      .container-form label input {border: 1px solid #b4e7ff; color:#4a4a4a; font-size: 16px ;padding: 12px 4px ; width: 100%}
+      .container-form button {display: inline-block; margin-left: 10px; width: 30%}
       @media (max-width: 600px) {
         body, #container { margin-top: 0; background: white; box-shadow: none; }
         body { border-top: 16px solid #ffa100; }
@@ -36,14 +41,23 @@
         Me gustaría saber que costruiste algo genial, con Firebase 🔥
       </p>
       <p>Puedes mirar el repositorio de este proyecto en
-        <a href="https://github.com/Villanuevand/jugando-con-fcm">Github</a>
+        <a href="https://github.com/Villanuevand/jugando-con-fcm" target="_blank">Github</a>
       </p>
+      <p id="error-container" class="message"></p>
       <div id="firebaseui-auth-container">
         <img id="loading" src="assets/loading.svg" alt="loading">
       </div>
+
       <div id="messaging-container">
         <h3>Registro exitoso</h3>
-        <button type="button" class="customButton firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-google firebaseui-id-idp-button"  id="logOut">Cerrar sesión</button>
+        <div class="container-form">
+          <label for="notification-message">
+            <input type="text" name="notification-message" id="notification-message">
+          </label>
+          <button type="submit" class="customButton firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-google firebaseui-id-idp-button">Envíar 📬</button>
+        </div>
+        <br>
+        <button type="button" class="customButton firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-google firebaseui-id-idp-button"  id="logOut">Cerrar sesión 🔜</button>
       </div>
     </div>
     <footer>
@@ -53,7 +67,7 @@
     <script defer src="/__/firebase/5.5.6/firebase-app.js"></script>
     <script defer src="/__/firebase/5.5.6/firebase-auth.js"></script>
     <script defer src="/__/firebase/5.5.6/firebase-messaging.js"></script>
-    <!--<script defer src="/__/firebase/5.5.4/firebase-database.js"></script>-->
+    <script defer src="/__/firebase/5.5.4/firebase-database.js"></script>
     <script defer src="/__/firebase/init.js"></script>
     <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
     <script>
