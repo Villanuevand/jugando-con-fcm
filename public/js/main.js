@@ -1,10 +1,17 @@
 const userName = document.getElementById('userName');
 const logOut = document.getElementById('logOut');
+// ID de Usuario Actual
+let currentUid = null;
 
 
 const ui = new firebaseui.auth.AuthUI(firebase.auth());
 ui.disableAutoSignIn();
 
+/**
+ * @name
+ * @description
+ * @return {{callbacks: {uiShown: callbacks.uiShown}, signInOptions: (string)[]}}
+ */
 function getUIConfig () {
   return {
     'callbacks': {
@@ -18,51 +25,109 @@ function getUIConfig () {
   };
 }
 
-firebase.auth().onAuthStateChanged((user) => {
-  user ? subscribeToNotifications(user) : userLogOut();
-});
-
-
-function userLogIn (user) {
+/**
+ * @name signInUI
+ * @description
+ * @param {firebase.User} - user
+ */
+function signInUI (user) {
   toggleElements('firebaseui-auth-container', 'none');
   toggleElements('messaging-container', 'block');
   toggleElements('error-container','none');
   userName.textContent = user.displayName;
+  firebase.database().ref(`users/${user.uid}`).update({
+    displayName: user.displayName,
+    photoURL: user.photoURL
+  });
+  // Almancenando el ID del usuario actual
+  currentUid = user.uid;
+  getUserToken()
 }
 
-function userLogOut () {
+/**
+ * @name signOutUI
+ * @description
+ */
+function signOutUI () {
   userName.textContent = 'desconocido';
   toggleElements('firebaseui-auth-container', 'block');
   toggleElements('messaging-container', 'none');
   ui.start('#firebaseui-auth-container', getUIConfig());
-  signOut();
+  // Limpiando el ID del usuario actual
+  currentUid = null;
 }
 
-function subscribeToNotifications (user) {
+/**
+ * @name requestPermission
+ * @description
+ */
+function requestPermission () {
   firebase.messaging().requestPermission()
-    .then(() =>  userLogIn(user))
+    .then(() => getUserToken() )
     .catch(() => {
-      userLogOut();
+      signOut();
       toggleElements('error-container','block');
       document.getElementById('error-container')
         .textContent = 'Para continuar debes aceptar las notificaciones 😕';
     });
 }
 
-function  signOut() {
+/**
+ * @name signOut
+ * @description
+ */
+function signOut() {
+  unsubscribeNotifications();
   firebase.auth().signOut();
 }
 
+/**
+ *
+ * @return {Q.Promise<T | never> | Q.IPromise<T | never> | a | * | PromiseLike<T | never> | Promise<T | never>}
+ */
+function unsubscribeNotifications () {
+  return firebase.database().ref(`users/${currentUid}`).remove();
+}
+
+/**
+ * @name getUserToken
+ * @description
+ */
+function getUserToken() {
+  firebase.messaging().getToken()
+    .then( currentToken => {
+      if (currentToken) {
+        firebase.database().ref(`users/${currentUid}/notificationsTokens/${currentToken}`).set(true)
+      } else {
+        requestPermission();
+      }
+    })
+    .catch( error => {
+        console.error('No se puedo obtener el token ☹️', error);
+    });
+}
+
+/**
+ *
+ * @param {Element} - element
+ * @param {String} - option
+ */
 function toggleElements (element, option) {
   document.getElementById(element).style.display = option;
 }
 
 const initApp  = function () {
-  logOut.addEventListener('click', function () {
-    firebase.auth().signOut()
-      .then(() => userLogOut())
-      .catch(() => console.log('no cerro, algo paso', error));
+  logOut.addEventListener('click',  signOut);
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user && currentUid === user.uid) {
+      return;
+    }
+    if (user) {
+      signInUI(user);
+    } else {
+      signOutUI();
+    }
   });
 };
-
+// Ejecuta initApp, al cargar todos los recursos
 window.addEventListener('load', initApp);
