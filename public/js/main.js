@@ -1,5 +1,6 @@
 const userName = document.getElementById('userName');
 const logOut = document.getElementById('logOut');
+const sendMessage = document.getElementById('send');
 // ID de Usuario Actual
 let currentUid = null;
 
@@ -41,7 +42,6 @@ function signInUI (user) {
   });
   // Almancenando el ID del usuario actual
   currentUid = user.uid;
-  getUserToken()
 }
 
 /**
@@ -63,7 +63,8 @@ function signOutUI () {
  */
 function requestPermission () {
   firebase.messaging().requestPermission()
-    .then(() => getUserToken() )
+    .then(() => getUserToken())
+    .then(() => signInUI(arguments[0]))
     .catch(() => {
       signOut();
       toggleElements('error-container','block');
@@ -78,7 +79,6 @@ function requestPermission () {
  */
 function signOut() {
   unsubscribeNotifications();
-  firebase.auth().signOut();
 }
 
 /**
@@ -86,7 +86,22 @@ function signOut() {
  * @return {Q.Promise<T | never> | Q.IPromise<T | never> | a | * | PromiseLike<T | never> | Promise<T | never>}
  */
 function unsubscribeNotifications () {
-  return firebase.database().ref(`users/${currentUid}`).remove();
+  firebase.messaging().getToken()
+    .then( token => firebase.messaging().deleteToken(token))
+    .then( () => firebase.database().ref('/tokens')
+      .orderByChild('uid')
+      .equalTo(firebase.auth().currentUser.uid)
+      .once('value'))
+    .then(snapshot => {
+      console.log('snapshopp',snapshot);
+      const key = Object.keys(snapshot.val())[0];
+      return firebase.database().ref('/tokens').child(key).remove();
+    })
+    .then(() => firebase.auth().signOut())
+    .catch( error => {
+      console.error('No se puedo hacer la desuscripción ☹️', error);
+      firebase.auth().signOut();
+    })
 }
 
 /**
@@ -94,16 +109,15 @@ function unsubscribeNotifications () {
  * @description
  */
 function getUserToken() {
-  firebase.messaging().getToken()
-    .then( currentToken => {
-      if (currentToken) {
-        firebase.database().ref(`users/${currentUid}/notificationsTokens/${currentToken}`).set(true)
-      } else {
-        requestPermission();
-      }
+  return firebase.messaging().getToken()
+    .then( token => {
+      firebase.database().ref('/tokens').push({
+        token: token,
+        uid: firebase.auth().currentUser.uid
+      });
     })
     .catch( error => {
-        console.error('No se puedo obtener el token ☹️', error);
+      console.error('No se puedo obtener el token ☹️', error);
     });
 }
 
@@ -116,18 +130,34 @@ function toggleElements (element, option) {
   document.getElementById(element).style.display = option;
 }
 
+function sendNotifications (e) {
+  e.preventDefault();
+  let message = document.getElementById('notification-message').value;
+  firebase.database().ref('/notifications').push({
+    user: firebase.auth().currentUser.displayName,
+    photoURL: firebase.auth().currentUser.photoURL,
+    message: message,
+  })
+    .then(() => document.getElementById('notification-message').value = '')
+    .catch((error) => console.error('No se puedo enviar la notificacion ☹️', error))
+}
+
 const initApp  = function () {
   logOut.addEventListener('click',  signOut);
+  sendMessage.addEventListener('click', sendNotifications);
+
   firebase.auth().onAuthStateChanged((user) => {
-    if (user && currentUid === user.uid) {
-      return;
-    }
     if (user) {
-      signInUI(user);
+      requestPermission(user);
     } else {
       signOutUI();
     }
   });
+
+  firebase.messaging().onTokenRefresh(getUserToken);
+  firebase.messaging().onMessage( (payload) => {
+      console.log('Paylaod', payload);
+  })
 };
 // Ejecuta initApp, al cargar todos los recursos
 window.addEventListener('load', initApp);
