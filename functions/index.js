@@ -4,18 +4,10 @@ admin.initializeApp(functions.config().firebase);
 
 exports.sendNotifications = functions.database.ref('/notifications/{notificationId}').onWrite((change, context) => {
 
-  const notificationID = context.params.notificationId;
-  if (change.before.exists()) {
-    return null;
-  }
-
-  if (!change.after.exists()) {
-    return null;
-  }
-  // Setup notification
   const rawData = change.after.val();
-  console.log('rawData, ',rawData);
-
+  const notificationID = context.params.notificationId;
+  if (change.before.exists()) { return null;}
+  if (!change.after.exists()) { return null;}
   const payload = {
     notification: {
       title: `New Message from ${rawData.user}!`,
@@ -25,13 +17,9 @@ exports.sendNotifications = functions.database.ref('/notifications/{notification
     }
   };
 
-  console.log('payload', payload);
 
   // Clean invalid tokens
   function cleanInvalidTokens(tokensWithKey, results) {
-    console.log('tokensWithKey',tokensWithKey);
-    console.log('results',results);
-
     const invalidTokens = [];
 
     results.forEach((result, i) => {
@@ -54,11 +42,9 @@ exports.sendNotifications = functions.database.ref('/notifications/{notification
 
 
   return admin.database().ref('/tokens').once('value').then((data) => {
-    console.log('/token on value', data);
     if ( !data.val() ) return;
 
     const snapshot = data.val();
-    console.log('/token on value  - snapshot', snapshot);
     const tokensWithKey = [];
     const tokens = [];
 
