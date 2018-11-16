@@ -38,3 +38,7 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Firebase
+functions/node_modules
+jugando-con-fcm-firebase-adminsdk-9dq42-27c47525c4.json
