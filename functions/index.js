@@ -10,7 +10,7 @@ exports.sendNotifications = functions.database.ref('/notifications/{notification
   if (!change.after.exists()) { return null;}
   const payload = {
     notification: {
-      title: `New Message from ${rawData.user}!`,
+      title: `Nuevo mensaje de: ${rawData.user}!`,
       body: rawData.message,
       icon: rawData.photoURL,
       click_action: 'https://jugando-con-fcm.firebaseapp.com'
@@ -24,7 +24,6 @@ exports.sendNotifications = functions.database.ref('/notifications/{notification
 
     results.forEach((result, i) => {
       if ( !result.error ) return;
-
       console.error('Failure sending notification to', tokensWithKey[i].token, result.error);
 
       switch(result.error.code) {
